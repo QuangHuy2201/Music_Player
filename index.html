@@ -76,8 +76,16 @@
         const $ = document.querySelector.bind(document)
         const $$ = document.querySelectorAll.bind(document)
 
+        
+        const heading  = $('header h2')
+        const cdThumb = $('.cd-thumb')
+        const audio = $('#audio')
+        const playBtn = $('.btn-toggle-play')
+        const player = $('.player')
+
         const app = {
-            currentIndex : 0,
+            currentIndex: 0,
+            isPlaying: false,
             songs: [
                 {
                     name: 'Nevada',
@@ -140,7 +148,7 @@
                     image: './asset/img/monsters.jpg'
                 }
             ],
-            // render list of song
+            // render playlists
             render: function () {
                 const htmls = this.songs.map(song => {
                     return `
@@ -164,12 +172,13 @@
             defineProperties:function () {
                 Object.defineProperty(this, 'currentSong', {
                     get: function () {
-                        return this.songs(this.currentIndex)
+                        return this.songs[this.currentIndex]
                     }
                 })
             },
             //listen and handle dom events
             handleEvents: function (event) {
+                const _this = this;
                 //dashboard will zoom out when user scroll top
                 const cd = $('.cd')
                 const cdWidth = cd.offsetWidth
@@ -179,16 +188,39 @@
                     
                     cd.style.width = newCdWidth > 0 ? newCdWidth + 'px' : 0
                     cd.style.opacity = newCdWidth / cdWidth
+                },
+
+                //When user clicks on play button
+                playBtn.onclick = function () {
+                    if (_this.isPlaying){
+                        audio.pause()
+                    }else{
+                        audio.play()
+                    }
+                    //Event listener
+                    //Song is started by user
+                    audio.onplay = function () {
+                        _this.isPlaying = true
+                        player.classList.add('playing')
+                    }
+                    //Song is paused by user
+                    audio.onpause = function () {
+                        _this.isPlaying = false
+                        player.classList.remove('playing')
+                    }
                 }
-
             },
-            loadCurrentSong: function() {
-
+            //When player starts, the first song will display an imformation
+            loadCurrentSong: function() {                
+                heading.textContent = this.currentSong.name
+                cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`
+                audio.src = this.currentSong.path
             },
+
             start: function () {
                 this.defineProperties()
                 this.handleEvents()
-                this.loadCurrentSong
+                this.loadCurrentSong()
                 this.render()
             }
         }
