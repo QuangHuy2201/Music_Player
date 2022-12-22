@@ -64,8 +64,8 @@
         /**
          * 1. Render Songs y
          * 2. Scroll top y
-         * 3. Play / Pause / Seek
-         * 4. CD rotate
+         * 3. Play / Pause / Seek y
+         * 4. CD rotate y
          * 5. Next / Prev
          * 6. Random
          * 7. Next / Repeat when ended
@@ -82,7 +82,8 @@
         const audio = $('#audio')
         const playBtn = $('.btn-toggle-play')
         const player = $('.player')
-
+        const progress = $('#progress')
+        
         const app = {
             currentIndex: 0,
             isPlaying: false,
@@ -179,9 +180,19 @@
             //listen and handle dom events
             handleEvents: function (event) {
                 const _this = this;
-                //dashboard will zoom out when user scroll top
                 const cd = $('.cd')
                 const cdWidth = cd.offsetWidth
+
+                //CD thumbnail rotate animation / stop
+                const cdThumbAnimate = cdThumb.animate([
+                    {transform: 'rotate(360deg)'}
+                ],{
+                    duration: 10000, //10s
+                    iteration: Infinity
+                })
+                cdThumbAnimate.pause()
+
+                //dashboard will zoom out when user scroll top
                 document.onscroll = function () {
                     const scrollTop =  window.screenY || document.documentElement.scrollTop
                     const newCdWidth = cdWidth - scrollTop
@@ -202,11 +213,28 @@
                     audio.onplay = function () {
                         _this.isPlaying = true
                         player.classList.add('playing')
+                        cdThumbAnimate.play()
                     }
                     //Song is paused by user
                     audio.onpause = function () {
                         _this.isPlaying = false
                         player.classList.remove('playing')
+                        cdThumbAnimate.pause()
+                    }
+
+                    //Time of song has been change
+                    audio.ontimeupdate = function () {
+                        if (audio.duration) {
+                            const progressPercent = Math.floor(audio.currentTime / audio.duration *100)
+                            progress.value = progressPercent
+                        }
+                    }
+
+                    // Song is skipped by user
+                    //Should use oninput instead of onchange
+                    progress.oninput = function (e) {
+                        const seekTime = audio.duration / 100 * e.target.value
+                        audio.currentTime = seekTime
                     }
                 }
             },
@@ -216,6 +244,8 @@
                 cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`
                 audio.src = this.currentSong.path
             },
+
+
 
             start: function () {
                 this.defineProperties()
