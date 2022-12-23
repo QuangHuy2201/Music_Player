@@ -67,7 +67,7 @@
          * 3. Play / Pause / Seek y
          * 4. CD rotate y
          * 5. Next / Prev y
-         * 6. Random
+         * 6. Random y
          * 7. Next / Repeat when ended
          * 8. Active Song
          * 9. Scroll active song into view
@@ -90,6 +90,7 @@
         const app = {
             currentIndex: 0,
             isPlaying: false,
+            isRandom: false,
             songs: [
                 {
                     name: 'Nevada',
@@ -245,17 +246,36 @@
                 
                 //When user click next button, the next song will play
                 nextBtn.onclick = function () {
-                    _this.nextSong()
+                    if (_this.isRandom) {
+                        _this.playRandomSong()
+                    } else {
+                        _this.nextSong()
+                    }
                     audio.play()
+                    console.log(_this.isRandom)
+
                 },
 
                 //When user click prev button, the forward song will play
                 prevBtn.onclick = function () {
-                    _this.prevSong()
+                    if (_this.isRandom) {
+                        _this.playRandomSong()
+                    } else {
+                        _this.prevSong()
+                    }
                     audio.play()
-                }
+                    console.log(_this.isRandom)
+                },
 
-                //
+                //When user active random function
+                randomBtn.onclick = function () {
+                    _this.isRandom = !_this.isRandom
+                    //Don't use e.target 
+                    //because we need to click exactly random button so it's too difficult
+                    //TOGGLE add when isRandom is true
+                    //remove when isRandom is false
+                    randomBtn.classList.toggle('active', _this.isRandom)
+                }
                 
             },
             //When player starts, the first song will display an imformation
@@ -282,6 +302,17 @@
                 if (this.currentIndex < 0) {
                     this.currentIndex = this.songs.length - 1
                 }
+                this.loadCurrentSong()
+            },
+
+            //When random song is active
+            playRandomSong: function () {
+                let newIndex
+                do {
+                    //maximum number never bigger than 'this.songs.length'
+                    newIndex = Math.floor(Math.random() * this.songs.length)
+                } while (newIndex === this.currentIndex)
+                this.currentIndex = newIndex
                 this.loadCurrentSong()
             },
 
