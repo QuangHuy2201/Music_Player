@@ -70,7 +70,7 @@
          * 6. Random y
          * 7. Next / Repeat when ended y
          * 8. Active Song y
-         * 9. Scroll active song into view
+         * 9. Scroll active song into view y
          * 10. Play song when click
          */
         const $ = document.querySelector.bind(document)
@@ -255,7 +255,7 @@
                     }
                     audio.play()
                     _this.render()
-                    -this.scrollToActiveSong()
+                    _this.scrollToActiveSong()
                 },
 
                 //When user click prev button, the forward song will play
@@ -338,8 +338,8 @@
             scrollToActiveSong: function () {
                 setTimeout(() => {
                     $('.song.active').scrollIntoView({
-                        behavior: smooth,
-                        block: nearest
+                        behavior: "smooth",
+                        block: "center"
                     })
                 }, 300);
             },
