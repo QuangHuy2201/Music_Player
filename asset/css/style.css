@@ -147,7 +147,7 @@ header h2 {
 .song.active {
     background-color: var(--primary-color);
 }
-
+/* ap dung khi nhan hoac giu chuot */
 .song:active {
     opacity: 0.8;
 }
