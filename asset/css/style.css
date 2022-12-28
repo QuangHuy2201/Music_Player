@@ -108,6 +108,7 @@ header h2 {
     background-color: var(--primary-color);
 }
 
+
 .progress {
     width: 100%;
     -webkit-appearance: none;
@@ -126,6 +127,18 @@ header h2 {
     height: 6px;
     background-color: var(--primary-color);
     cursor: pointer;
+}
+
+.time {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--primary-color);
+}
+
+.volume {
+    margin-top: 10px;
+    color: var(--primary-color);
 }
 
 /* PLAYLIST */
