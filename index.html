@@ -48,8 +48,13 @@
                     <i class="fas fa-random"></i>
                 </div>
             </div>
-
+            <div class="time">
+                <span class="currTime"></span>
+                <span class="durationSong"></span>
+            </div>
             <input id="progress" class="progress" type="range" value="0" step="1" min="0" max="100" />
+
+            <input id="volume" class="volume" type="range" value="0.6" step="0.1" min="0" max="1" />
 
             <audio id="audio" src=""></audio>
         </div>
@@ -84,11 +89,14 @@
         const playBtn = $('.btn-toggle-play')
         const player = $('.player')
         const progress = $('#progress')
+        const volume = $('.volume')
         const nextBtn = $('.btn-next')
         const prevBtn = $('.btn-prev')
         const randomBtn = $('.btn-random')
         const repeatBtn  = $('.btn-repeat')
         const playlist = $('.playlist')
+        const currentTime = $('.currTime')
+        const durationTime = $('.durationSong')
         
         const app = {
             currentIndex: 0,
@@ -248,13 +256,45 @@
                     }
                 },
 
-                // Song is skipped by user
+                //Song is skipped by user
                 //Should use oninput instead of onchange
                 progress.oninput = function (e) {
                     const seekTime = audio.duration / 100 * e.target.value
                     audio.currentTime = seekTime
                 },
-                
+                //Show current time of the song
+                audio.addEventListener('timeupdate', function () {
+                    let currentMin = Math.floor(audio.currentTime / 60)
+                    let currentSec = Math.floor(audio.currentTime - currentMin * 60)
+
+                    if (currentMin < 10) {
+                        currentMin = `0${currentMin}`
+                    }
+                    if (currentSec < 10) {
+                        currentSec = `0${currentSec}`
+                    }
+                    currentTime.innerHTML = `${currentMin}:${currentSec}`
+                }),
+
+                //Show duration of the song
+                audio.addEventListener('loadedmetadata', function () {
+                    let durationMin = Math.floor(audio.duration / 60)
+                    let durationSec = Math.floor(audio.duration - durationMin * 60)
+
+                    if (durationMin < 10) {
+                        durationMin = `0${durationMin}`
+                    }
+                    if (durationSec < 10) {
+                        durationSec = `0${durationSec}`
+                    }
+                    durationTime.innerHTML = `${durationMin}:${durationSec}`
+                }),
+
+                //Volume
+                volume.oninput = function (e) {
+                    audio.volume = e.target.value
+                },
+
                 //When user click next button, the next song will play
                 nextBtn.onclick = function () {
                     if (_this.isRandom) {
@@ -330,8 +370,6 @@
             loadCurrentSong: function () {                
                 heading.textContent = this.currentSong.name
                 this.isPlayed.push(this.currentIndex)
-                console.log(this.isPlayed)
-                console.log(this.isPlaying)
                 cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`
                 audio.src = this.currentSong.path
             },
